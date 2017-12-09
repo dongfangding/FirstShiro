@@ -16,6 +16,6 @@ public class TestController {
 	@RequestMapping("/printHelloWorld")
 	public String printHelloWorld() {
 		System.out.println(testService.printHelloWorld());
-		return "redirect:/pages/index.jsp";
+		return "list";
 	}
 }

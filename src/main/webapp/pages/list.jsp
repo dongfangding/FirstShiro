@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Index</title>
+<title>List page</title>
 </head>
 <body>
-	Hello world!
+	List Page
 </body>
 </html>

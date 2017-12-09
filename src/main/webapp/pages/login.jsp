@@ -4,9 +4,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Index</title>
+<title>Login</title>
 </head>
 <body>
-	Hello world!
+		<form >	
+			username: <input type = "text" name = "username" /> <br />
+			password: <input type = "password" name = "password"> <br />
+			<input type = "submit" value = "Login">
+		</form>
 </body>
 </html>

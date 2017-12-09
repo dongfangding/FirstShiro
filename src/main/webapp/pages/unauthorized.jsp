@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Index</title>
+<title>unauthorized</title>
 </head>
 <body>
-	Hello world!
+unauthorized
 </body>
 </html>
