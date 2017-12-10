@@ -20,24 +20,27 @@
 	 -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
-        <property name="loginUrl" value="/login.jsp"/>
-        <property name="successUrl" value="/list.jsp"/>
-        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+        <property name="loginUrl" value="/pages/login.jsp"/>
+        <property name="successUrl" value="/pages/list.jsp"/>
+        <property name="unauthorizedUrl" value="/pages/unauthorized.jsp"/>
       <!--   <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"></property> -->
       
       <!--  
         	配置哪些页面需要受保护. 以及访问这些页面需要的权限. 经过测试，这个只对前端的请求有作用，后台直接转发的资源不受限制
+        	这个依赖于手动配置，但是真正的数据权限应该来自于数据库，可以使用上面的filterChainDefinitionMap。来构建一个实例工厂bean。来初始化数据
         	1). anon 可以被匿名访问
         	2). authc 必须认证(即登录)后才可能访问的页面. 
         	3). logout 登出.
         	4). roles 角色过滤器
         -->
-        <!--  
+         
         <property name="filterChainDefinitions">
             <value>
-                /login.jsp = anon
-                /shiro/login = anon
-                /shiro/logout = logout
+                /pages/login.jsp = anon  
+                /pages/unauthorized.jsp = anon
+                /pages/logout.jsp = logout
+                /pages/list.jsp = authc
+                /user/loginByShiro = anon
                 
                 /user.jsp = roles[user]
                 /admin.jsp = roles[admin]
@@ -46,15 +49,19 @@
                 /** = authc
             </value>
         </property>
-        -->
     </bean>
     
     
     <!-- 配置SecurityManager，这个是shiro的核组件 -->
-    <!-- 	1. 可以配置缓存 2. 配置认证策略  3 配置Realm 4. 配置rememberMe的时间 -->
+    <!-- 	1.配置认证策略(如果要配置，必须要配置在Realm前面，否则启动不会报错，但实际上使用ModularRealmAuthenticator这个类中的realm为空，会报错)   
+    		2. 配置Realm  3. 可以配置缓存  4. 配置rememberMe的时间 -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-    	<!-- 配置Realm，来认证用户信息,可以使用realm来配置一个，也可以使用realms来配置一个list.如果配置多个，就牵扯到认证策略的问题 -->
-    	<!-- <property name="realm" ref="myRealm"/> -->
+    	 <!-- 配置认证策略，认证策略使用在多个Realm的情况下如何算认证通过，是全部都认证通过，还是只要有一个就可以等 -->
+    	<!-- 
+    		org.apache.shiro.mgt.AuthenticatingSecurityManager
+    	 -->
+    	 <property name="authenticator" ref="authenticator" />
+    	 <!-- 配置Realm，来认证用户信息,可以使用realm来配置一个，也可以使用realms来配置一个list.如果配置多个，就牵扯到认证策略的问题 -->
     	<!-- 
     		org.apache.shiro.web.mgt.DefaultWebSecurityManager.DefaultWebSecurityManager(Collection<Realm>)
     		public DefaultWebSecurityManager(Collection<Realm> realms) {
@@ -73,27 +80,53 @@
 		        afterRealmsSet();
 		    }
     	 -->
+    	<!-- <property name="realm" ref="myRealm"/> -->
     	<property name="realms">
-    		<list>
-    			<ref bean="userRealm" />
+        	<list>
+    			<ref bean="userRealm"/>
+    			<!-- <ref bean="jdbcRealm"/> -->
     		</list>
-    	</property>
+        </property>
     	
-    	<!-- 配置认证策略，认证策略使用在多个Realm的情况下如何算认证通过，是全部都认证通过，还是只要有一个就可以等 -->
-    	<!-- 
-    		org.apache.shiro.mgt.AuthenticatingSecurityManager
-    	 -->
-    	 <property name="authenticator" ref="authenticator" />
+    	<!-- 配置缓存 -->
+    	<!-- <property name="cacheManager" ref="cacheManager"/> -->
     	
     	<!-- 配置rememberMe的时间 -->
     	<property name="rememberMeManager.cookie.maxAge" value="10"></property>
     </bean>
     
+     <!--  配置 CacheManager. 需要加入 ehcache 的 jar 包及配置文件 -->     
+   <!--  <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager"> -->
+        <!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
+             will be creaed with a default config:
+             <property name="cacheManager" ref="ehCacheManager"/> -->
+        <!-- If you don't have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
+             a specific Ehcache configuration to be used, specify that here.  If you don't, a default
+             will be used.: -->
+        <!-- <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>  -->
+   <!--  </bean> -->
     
-    <!-- 定义一个Realm，继承AuthenticatingRealm，返回认证信息 -->
+    <!-- 定义一个Realm，继承org.apache.shiro.realm.AuthorizingRealm，返回认证信息 -->
 	<bean id="userRealm" class="com.ddf.training.shiro.UserRealm">
-	
+		<!-- 配置MD5盐值加密 -->
+		<property name="credentialsMatcher">
+    		<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+    			<!-- 加密算法 -->
+    			<property name="hashAlgorithmName" value="MD5"></property>
+    			<!-- 加密迭代次数 -->
+    			<property name="hashIterations" value="1024"></property>
+    		</bean>
+    	</property>
 	</bean>
+	
+	<bean id="jdbcRealm" class="com.ddf.training.shiro.ShiroRealm">
+    	<property name="credentialsMatcher">
+    		<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+    			<property name="hashAlgorithmName" value="MD5"></property>
+    			<property name="hashIterations" value="1024"></property>
+    		</bean>
+    	</property>
+    </bean>
 	
 	<!-- 定义认证策略，认证策略使用在多个Realm的情况下如何算认证通过，是全部都认证通过，还是只要有一个就可以等 -->
 	<bean id="authenticator" 
@@ -101,5 +134,18 @@
     	<property name="authenticationStrategy">
     		<bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"></bean>
     	</property>
+    </bean>
+    
+    
+     <!--  配置 LifecycleBeanPostProcessor. 可以自定的来调用配置在 Spring IOC 容器中 shiro bean 的生命周期方法. -->       
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    
+     <!-- Enable Shiro Annotations for Spring-configured beans.  Only run after
+         the lifecycleBeanProcessor has run: -->
+    <!--  启用 IOC 容器中使用 shiro 的注解. 但必须在配置了 LifecycleBeanPostProcessor 之后才可以使用. -->     
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
     </bean>
 </beans>

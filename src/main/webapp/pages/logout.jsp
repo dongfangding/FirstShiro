@@ -4,11 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>List page</title>
+<title>Insert title here</title>
 </head>
 <body>
-
-	<%@include file="authc.jsp" %>
-	List Page
+	配合shiroFilter 的filterChainDefinitions。把logout赋给一个超链接，点击就可以退出
 </body>
 </html>

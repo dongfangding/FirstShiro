@@ -11,8 +11,8 @@
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<!--支持JSTL，不详。我用的高版本，如果引入了JSTL，SpringMVC会自动把InternalResourceViewResolver转换为JSTLView -->
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
+		<!-- <property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" /> -->
 		<!-- 模板的路径 -->
 		<property name="prefix" value="/pages/" />
 		<!-- 模板文件的后缀 -->

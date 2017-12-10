@@ -7,9 +7,11 @@
 <title>Login</title>
 </head>
 <body>
-		<form >	
-			username: <input type = "text" name = "username" /> <br />
-			password: <input type = "password" name = "password"> <br />
+	<%@include file="anon.jsp" %>
+	<h4>一切未认证的请求，都会被重定向到这个界面</h4>
+		<form action="${pageContext.request.contextPath }/user/loginByShiro" method="post">	
+			username: <input type = "text" name = "username" /> <br /><br/>
+			password: <input type = "password" name = "password"> <br /> <br/>
 			<input type = "submit" value = "Login">
 		</form>
 </body>

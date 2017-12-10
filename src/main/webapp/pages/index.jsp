@@ -7,6 +7,9 @@
 <title>Index</title>
 </head>
 <body>
-	Hello world!
+	<%@include file="anon.jsp" %>
+	
+	
+	FirstShiro index jsp
 </body>
 </html>
