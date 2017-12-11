@@ -4,15 +4,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>List page</title>
+<title>Insert title here</title>
 </head>
 <body>
-
 	<%@include file="authc.jsp" %>
-	List Page
 	
-	<h4><a href="${pageContext.request.contextPath }/pages/admin.jsp">to admin page</a></h4>
-	<h4><a href="${pageContext.request.contextPath }/pages/user.jsp">to user page</a></h4>
-	<h4><a href="${pageContext.request.contextPath }/pages/downloadUserIcon.jsp">to download page</a></h4>
+	只有认证过，并且角色是admin才可以看到这个界面
 </body>
 </html>

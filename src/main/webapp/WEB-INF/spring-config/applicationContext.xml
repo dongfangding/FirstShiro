@@ -23,7 +23,7 @@
         <property name="loginUrl" value="/pages/login.jsp"/>
         <property name="successUrl" value="/pages/list.jsp"/>
         <property name="unauthorizedUrl" value="/pages/unauthorized.jsp"/>
-      <!--   <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"></property> -->
+        <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"></property>
       
       <!--  
         	配置哪些页面需要受保护. 以及访问这些页面需要的权限. 经过测试，这个只对前端的请求有作用，后台直接转发的资源不受限制
@@ -34,7 +34,7 @@
         	4). roles 角色过滤器
         -->
          
-        <property name="filterChainDefinitions">
+       <!--  <property name="filterChainDefinitions">
             <value>
                 /pages/login.jsp = anon  
                 /pages/unauthorized.jsp = anon
@@ -48,7 +48,7 @@
                 # everything else requires authentication:
                 /** = authc
             </value>
-        </property>
+        </property> -->
     </bean>
     
     
@@ -148,4 +148,11 @@
     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
         <property name="securityManager" ref="securityManager"/>
     </bean>
+    
+    
+    <!-- 初始化权限 -->
+    <bean id="filterChainDefinitionMapBuilder" class="com.ddf.training.bean.FilterChainDefinitionMapBuilder" />
+    
+    <!-- 通过com.ddf.training.FilterChainDefinitionMapBuilder实例化工厂来初始化一个bean，实际上是一个Map，这个bean给shiroFilter的filterChainDefinitionMap使用 -->
+    <bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder" factory-method="buildFilterChainDefinitionMap" />
 </beans>

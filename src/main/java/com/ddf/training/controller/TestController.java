@@ -20,6 +20,6 @@ public class TestController {
 	@RequestMapping("/printHelloWorld")
 	public String printHelloWorld() {
 		log.info(testService.printHelloWorld());
-		return "list";
+		return "redirect:/pages/list.jsp";
 	}
 }

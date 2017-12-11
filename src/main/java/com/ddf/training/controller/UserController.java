@@ -25,7 +25,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/loginByShiro", method=RequestMethod.POST)
-	public ModelAndView loginByShiro(@RequestParam String username, @RequestParam String password) {
+	public String loginByShiro(@RequestParam String username, @RequestParam String password) {
 		log.info("-----------------login request .. username: {} and password: {}", username, password);
 		// 先获得当前Subject对象
 		Subject subject = SecurityUtils.getSubject();
@@ -42,7 +42,7 @@ public class UserController {
 				// 登陆成功后，返回/pages/list.jsp。不知道为什么shiroFilter配置的successUrl无效 
 				ModelAndView mv = new ModelAndView();
 				mv.setViewName("list");
-				return mv;
+				return "redirect:/pages/list.jsp";
             } // ... catch more exceptions here (maybe custom ones specific to your application?
             // 所有认证时异常的父类. 
             catch (AuthenticationException ae) {
@@ -50,6 +50,11 @@ public class UserController {
             	System.out.println("登录失败: " + ae.getMessage());
             }
 			
+		} else {
+			// 登陆成功后，返回/pages/list.jsp。不知道为什么shiroFilter配置的successUrl无效 
+			ModelAndView mv = new ModelAndView();
+			mv.setViewName("list");
+			return "redirect:/pages/list.jsp";
 		}
 		return null;
 	}

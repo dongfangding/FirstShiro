@@ -12,17 +12,19 @@ import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ShiroRealm extends AuthorizingRealm {
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(
 			AuthenticationToken token) throws AuthenticationException {
-		System.out.println("[FirstRealm] doGetAuthenticationInfo");
+		log.info("[FirstRealm] doGetAuthenticationInfo");
 		
 		//1. 把 AuthenticationToken 转换为 UsernamePasswordToken 
 		UsernamePasswordToken upToken = (UsernamePasswordToken) token;
@@ -31,7 +33,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		String username = upToken.getUsername();
 		
 		//3. 调用数据库的方法, 从数据库中查询 username 对应的用户记录
-		System.out.println("从数据库中获取 username: " + username + " 所对应的用户信息.");
+		log.info("从数据库中获取 username: " + username + " 所对应的用户信息.");
 		
 		//4. 若用户不存在, 则可以抛出 UnknownAccountException 异常
 		if("unknown".equals(username)){
@@ -66,16 +68,6 @@ public class ShiroRealm extends AuthorizingRealm {
 		return info;
 	}
 
-	public static void main(String[] args) {
-		String hashAlgorithmName = "MD5";
-		Object credentials = "123456";
-		Object salt = ByteSource.Util.bytes("user");;
-		int hashIterations = 1024;
-		
-		Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashIterations);
-		System.out.println(result);
-	}
-
 	//授权会被 shiro 回调的方法
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(
@@ -87,7 +79,7 @@ public class ShiroRealm extends AuthorizingRealm {
 		Set<String> roles = new HashSet<>();
 		roles.add("user");
 		if("admin".equals(principal)){
-			roles.add("admin");
+			roles.add("admin1");
 		}
 		
 		//3. 创建 SimpleAuthorizationInfo, 并设置其 reles 属性.

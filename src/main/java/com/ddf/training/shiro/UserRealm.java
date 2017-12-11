@@ -1,6 +1,7 @@
 package com.ddf.training.shiro;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.shiro.authc.AuthenticationException;
@@ -23,7 +24,11 @@ import com.ddf.training.util.ConstantsUtil;
 
 public class UserRealm extends AuthorizingRealm {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
-
+	
+	
+	/**
+	 * 执行Subject.login之后，shiro会自动来找Realm中自己实现的认证方法。经过实验，如果有多个Realm，并且其中一个登陆成功后
+	 */
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 		log.info("-----登陆认证： UserRealm----doGetAuthenticationInfo");
@@ -56,26 +61,30 @@ public class UserRealm extends AuthorizingRealm {
 
 	
 	/**
-	 * 授权会被 shiro 回调的方法
+	 * 授权会被 shiro 回调的方法.每次需要访问需要角色权限的资源时，会自动调用这个方法来判断用户的角色是否能够匹配上
 	 * @param principals
 	 * @return
 	 */
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		
-		log.info("--权限数据-- UserRealm doGetAuthorizationInfo");
+		log.info("..............获得当前用户的权限数据-- UserRealm doGetAuthorizationInfo..........");
 		//1. 从 PrincipalCollection 中来获取登录用户的信息
-		Object principal = principals.getPrimaryPrincipal();
-		
+		User principal = (User) principals.getPrimaryPrincipal();
+		log.info("...........当前登陆用户: [{}]", principal);
 		//2. 利用登录的用户的信息来用户当前用户的角色或权限(可能需要查询数据库)
-		Set<String> roles = new HashSet<>();
-		roles.add("user");
-		if("admin".equals(principal)){
-			roles.add("admin");
+		Set<String> roleSet = new HashSet<>();
+		UserDao userDao = UserDao.getInstance();
+		List<String> roleList = userDao.getRolesByUserName(principal.getUsername());
+		log.info("........当前登陆用户： [{}], 对应角色列表: [{}]", principal, roleList.toString());
+		// 把当前用户的权限放入Set中
+		if (roleList != null && roleList.size() > 0) {
+			for (String role : roleList) {
+				roleSet.add(role);
+			}
 		}
-		
 		//3. 创建 SimpleAuthorizationInfo, 并设置其 reles 属性.
-		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roleSet);
 		
 		//4. 返回 SimpleAuthorizationInfo 对象. 
 		return info;

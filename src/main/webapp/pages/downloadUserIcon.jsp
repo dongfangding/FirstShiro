@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>unauthorized</title>
+<title>Insert title here</title>
 </head>
 <body>
-unauthorized未授权的界面
+	<a href="${pageContext.request.contextPath }/firstRole/responsePicByAdminRole">只有admin角色的人才能下载</a>
 </body>
 </html>
