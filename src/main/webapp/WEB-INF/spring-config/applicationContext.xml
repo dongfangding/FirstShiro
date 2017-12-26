@@ -5,7 +5,7 @@
 	
 	<!--  首先要配置shiroFilter这个bean。这个默认和web.xml中shiro启动时的filter-name必须一致 -->
 	<!--    1. loginUrl 即每个请求被拦截到都要被重定向到哪个界面， -->
-	<!--    2. successUrl 登陆成功后跳转到哪个界面 -->
+	<!--    2. successUrl 登陆成功后跳转到哪个界面,只有用户登陆前没有具体的请求时或者web.xml中没有配置welcome-file-list才生效 -->
 	<!--    3. unauthorizedUrl 未被授权重定向到哪个界面 -->
 	<!--    4. 配置securityManager -->
 	<!-- 
